@@ -195,6 +195,21 @@ logic [1:0] forward_a_e;
 logic [1:0] forward_b_e;
 always_comb begin : HAZARD_UNIT
 
+  // Forward A
+  // Forward From Memory stage
+  if (((rs1_e == rd_m) & reg_write_m) & (rs1_e != 0))      forward_a_e = 2'b10;
+  // Forward from Writeback stage
+  else if (((rs1_e == rd_w) & reg_write_w) & (rs1_e != 0)) forward_a_e = 2'b01;
+  // No forwarding
+  else                                                     forward_a_e = 2'b00;
+  
+  // Forward B
+  // Forward From Memory stage
+  if (((rs2_e == rd_m) & reg_write_m) & (rs2_e != 0))      forward_b_e = 2'b10;
+  // Forward from Writeback stage
+  else if (((rs2_e == rd_w) & reg_write_w) & (rs2_e != 0)) forward_b_e = 2'b01;
+  // No forwarding
+  else                                                     forward_b_e = 2'b00;
 end
 
 // Fetch Stage ******************************************************
