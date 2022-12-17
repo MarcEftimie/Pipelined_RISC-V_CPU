@@ -32,7 +32,7 @@ initial begin
   sysclk = 0;
   buttons = 2'b01;
   spi_miso = 0;
-  repeat (2) @(negedge sysclk);
+  repeat (1) @(negedge sysclk);
   buttons = 2'b00;
   repeat (MAX_CYCLES) @(posedge sysclk);
   @(negedge sysclk);

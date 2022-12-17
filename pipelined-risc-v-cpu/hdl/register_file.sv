@@ -2,7 +2,7 @@
 `timescale 1ns/1ps
 
 module register_file(
-  clk, // wtf, no rst?  // avi - makes debugging register writes easier
+  clk, // wtf, no rst?  // avi - makes debugging register_neg writes easier
   wr_ena, wr_addr, wr_data,
   rd_addr0, rd_data0,
   rd_addr1, rd_data1
@@ -26,14 +26,14 @@ always_comb begin
 end
 
 // DON'T DO THIS:
-// logic [31:0] register_file_registers [31:0]
+// logic [31:0] register_neg_file_register_negs [31:0]
 // CAN'T: because that's a RAM. Works in simulation
 
-// Use python to instantiate a bunch of register modules with the right connections.
+// Use python to instantiate a bunch of register_neg modules with the right connections.
 
 // python: print(",".join(["x%02d"%i for i in range(0,32)]))
 wire [31:0] x01,x02,x03,x04,x05,x06,x07,x08,x09,x10,x11,x12,x13,x14,x15,x16,x17,x18,x19,x20,x21,x22,x23,x24,x25,x26,x27,x28,x29,x30,x31;
-logic [31:0] wr_enas; // separate enable for each register
+logic [31:0] wr_enas; // separate enable for each register_neg
 
 
 // Need 2x read muxes
@@ -180,39 +180,39 @@ decoder_5_to_32 WR_ENA_DECODER(.ena(wr_ena), .in(wr_addr), .out(wr_enas));
 
 
 
-// instantiate registers:
-// python: print("\n".join(["register #(.N(32)) r_x%02d(.clk(clk), .rst(1'b0), .q(x%02d), .d(wr_data), .ena(wr_enas[%02d]));"%(i,i,i) for i in range(1,32)]))
-register #(.N(32)) r_x01(.clk(clk), .rst(1'b0), .q(x01), .d(wr_data), .ena(wr_enas[01]));
-register #(.N(32)) r_x02(.clk(clk), .rst(1'b0), .q(x02), .d(wr_data), .ena(wr_enas[02]));
-register #(.N(32)) r_x03(.clk(clk), .rst(1'b0), .q(x03), .d(wr_data), .ena(wr_enas[03]));
-register #(.N(32)) r_x04(.clk(clk), .rst(1'b0), .q(x04), .d(wr_data), .ena(wr_enas[04]));
-register #(.N(32)) r_x05(.clk(clk), .rst(1'b0), .q(x05), .d(wr_data), .ena(wr_enas[05]));
-register #(.N(32)) r_x06(.clk(clk), .rst(1'b0), .q(x06), .d(wr_data), .ena(wr_enas[06]));
-register #(.N(32)) r_x07(.clk(clk), .rst(1'b0), .q(x07), .d(wr_data), .ena(wr_enas[07]));
-register #(.N(32)) r_x08(.clk(clk), .rst(1'b0), .q(x08), .d(wr_data), .ena(wr_enas[08]));
-register #(.N(32)) r_x09(.clk(clk), .rst(1'b0), .q(x09), .d(wr_data), .ena(wr_enas[09]));
-register #(.N(32)) r_x10(.clk(clk), .rst(1'b0), .q(x10), .d(wr_data), .ena(wr_enas[10]));
-register #(.N(32)) r_x11(.clk(clk), .rst(1'b0), .q(x11), .d(wr_data), .ena(wr_enas[11]));
-register #(.N(32)) r_x12(.clk(clk), .rst(1'b0), .q(x12), .d(wr_data), .ena(wr_enas[12]));
-register #(.N(32)) r_x13(.clk(clk), .rst(1'b0), .q(x13), .d(wr_data), .ena(wr_enas[13]));
-register #(.N(32)) r_x14(.clk(clk), .rst(1'b0), .q(x14), .d(wr_data), .ena(wr_enas[14]));
-register #(.N(32)) r_x15(.clk(clk), .rst(1'b0), .q(x15), .d(wr_data), .ena(wr_enas[15]));
-register #(.N(32)) r_x16(.clk(clk), .rst(1'b0), .q(x16), .d(wr_data), .ena(wr_enas[16]));
-register #(.N(32)) r_x17(.clk(clk), .rst(1'b0), .q(x17), .d(wr_data), .ena(wr_enas[17]));
-register #(.N(32)) r_x18(.clk(clk), .rst(1'b0), .q(x18), .d(wr_data), .ena(wr_enas[18]));
-register #(.N(32)) r_x19(.clk(clk), .rst(1'b0), .q(x19), .d(wr_data), .ena(wr_enas[19]));
-register #(.N(32)) r_x20(.clk(clk), .rst(1'b0), .q(x20), .d(wr_data), .ena(wr_enas[20]));
-register #(.N(32)) r_x21(.clk(clk), .rst(1'b0), .q(x21), .d(wr_data), .ena(wr_enas[21]));
-register #(.N(32)) r_x22(.clk(clk), .rst(1'b0), .q(x22), .d(wr_data), .ena(wr_enas[22]));
-register #(.N(32)) r_x23(.clk(clk), .rst(1'b0), .q(x23), .d(wr_data), .ena(wr_enas[23]));
-register #(.N(32)) r_x24(.clk(clk), .rst(1'b0), .q(x24), .d(wr_data), .ena(wr_enas[24]));
-register #(.N(32)) r_x25(.clk(clk), .rst(1'b0), .q(x25), .d(wr_data), .ena(wr_enas[25]));
-register #(.N(32)) r_x26(.clk(clk), .rst(1'b0), .q(x26), .d(wr_data), .ena(wr_enas[26]));
-register #(.N(32)) r_x27(.clk(clk), .rst(1'b0), .q(x27), .d(wr_data), .ena(wr_enas[27]));
-register #(.N(32)) r_x28(.clk(clk), .rst(1'b0), .q(x28), .d(wr_data), .ena(wr_enas[28]));
-register #(.N(32)) r_x29(.clk(clk), .rst(1'b0), .q(x29), .d(wr_data), .ena(wr_enas[29]));
-register #(.N(32)) r_x30(.clk(clk), .rst(1'b0), .q(x30), .d(wr_data), .ena(wr_enas[30]));
-register #(.N(32)) r_x31(.clk(clk), .rst(1'b0), .q(x31), .d(wr_data), .ena(wr_enas[31]));
+// instantiate register_negs:
+// python: print("\n".join(["register_neg #(.N(32)) r_x%02d(.clk(clk), .rst(1'b0), .q(x%02d), .d(wr_data), .ena(wr_enas[%02d]));"%(i,i,i) for i in range(1,32)]))
+register_neg #(.N(32)) r_x01(.clk(clk), .rst(1'b0), .q(x01), .d(wr_data), .ena(wr_enas[01]));
+register_neg #(.N(32)) r_x02(.clk(clk), .rst(1'b0), .q(x02), .d(wr_data), .ena(wr_enas[02]));
+register_neg #(.N(32)) r_x03(.clk(clk), .rst(1'b0), .q(x03), .d(wr_data), .ena(wr_enas[03]));
+register_neg #(.N(32)) r_x04(.clk(clk), .rst(1'b0), .q(x04), .d(wr_data), .ena(wr_enas[04]));
+register_neg #(.N(32)) r_x05(.clk(clk), .rst(1'b0), .q(x05), .d(wr_data), .ena(wr_enas[05]));
+register_neg #(.N(32)) r_x06(.clk(clk), .rst(1'b0), .q(x06), .d(wr_data), .ena(wr_enas[06]));
+register_neg #(.N(32)) r_x07(.clk(clk), .rst(1'b0), .q(x07), .d(wr_data), .ena(wr_enas[07]));
+register_neg #(.N(32)) r_x08(.clk(clk), .rst(1'b0), .q(x08), .d(wr_data), .ena(wr_enas[08]));
+register_neg #(.N(32)) r_x09(.clk(clk), .rst(1'b0), .q(x09), .d(wr_data), .ena(wr_enas[09]));
+register_neg #(.N(32)) r_x10(.clk(clk), .rst(1'b0), .q(x10), .d(wr_data), .ena(wr_enas[10]));
+register_neg #(.N(32)) r_x11(.clk(clk), .rst(1'b0), .q(x11), .d(wr_data), .ena(wr_enas[11]));
+register_neg #(.N(32)) r_x12(.clk(clk), .rst(1'b0), .q(x12), .d(wr_data), .ena(wr_enas[12]));
+register_neg #(.N(32)) r_x13(.clk(clk), .rst(1'b0), .q(x13), .d(wr_data), .ena(wr_enas[13]));
+register_neg #(.N(32)) r_x14(.clk(clk), .rst(1'b0), .q(x14), .d(wr_data), .ena(wr_enas[14]));
+register_neg #(.N(32)) r_x15(.clk(clk), .rst(1'b0), .q(x15), .d(wr_data), .ena(wr_enas[15]));
+register_neg #(.N(32)) r_x16(.clk(clk), .rst(1'b0), .q(x16), .d(wr_data), .ena(wr_enas[16]));
+register_neg #(.N(32)) r_x17(.clk(clk), .rst(1'b0), .q(x17), .d(wr_data), .ena(wr_enas[17]));
+register_neg #(.N(32)) r_x18(.clk(clk), .rst(1'b0), .q(x18), .d(wr_data), .ena(wr_enas[18]));
+register_neg #(.N(32)) r_x19(.clk(clk), .rst(1'b0), .q(x19), .d(wr_data), .ena(wr_enas[19]));
+register_neg #(.N(32)) r_x20(.clk(clk), .rst(1'b0), .q(x20), .d(wr_data), .ena(wr_enas[20]));
+register_neg #(.N(32)) r_x21(.clk(clk), .rst(1'b0), .q(x21), .d(wr_data), .ena(wr_enas[21]));
+register_neg #(.N(32)) r_x22(.clk(clk), .rst(1'b0), .q(x22), .d(wr_data), .ena(wr_enas[22]));
+register_neg #(.N(32)) r_x23(.clk(clk), .rst(1'b0), .q(x23), .d(wr_data), .ena(wr_enas[23]));
+register_neg #(.N(32)) r_x24(.clk(clk), .rst(1'b0), .q(x24), .d(wr_data), .ena(wr_enas[24]));
+register_neg #(.N(32)) r_x25(.clk(clk), .rst(1'b0), .q(x25), .d(wr_data), .ena(wr_enas[25]));
+register_neg #(.N(32)) r_x26(.clk(clk), .rst(1'b0), .q(x26), .d(wr_data), .ena(wr_enas[26]));
+register_neg #(.N(32)) r_x27(.clk(clk), .rst(1'b0), .q(x27), .d(wr_data), .ena(wr_enas[27]));
+register_neg #(.N(32)) r_x28(.clk(clk), .rst(1'b0), .q(x28), .d(wr_data), .ena(wr_enas[28]));
+register_neg #(.N(32)) r_x29(.clk(clk), .rst(1'b0), .q(x29), .d(wr_data), .ena(wr_enas[29]));
+register_neg #(.N(32)) r_x30(.clk(clk), .rst(1'b0), .q(x30), .d(wr_data), .ena(wr_enas[30]));
+register_neg #(.N(32)) r_x31(.clk(clk), .rst(1'b0), .q(x31), .d(wr_data), .ena(wr_enas[31]));
 
 
 endmodule
