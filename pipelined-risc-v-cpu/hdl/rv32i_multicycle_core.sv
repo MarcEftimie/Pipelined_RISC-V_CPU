@@ -95,23 +95,23 @@ logic branch_d;
 logic [2:0] alu_control_d;
 logic alu_src_d;
 logic [1:0] alu_op;
-enum logic [1:0] {EXTEND_I, EXTEND_S, EXTEND_B, EXTEND_J} imm_src_d;
+enum logic [2:0] {NO_EXTEND, EXTEND_I, EXTEND_S, EXTEND_B, EXTEND_J} imm_src_d;
 
 always_comb begin : MAIN_DECODER
   case(op)
     LW : begin
       reg_write_d = 1'b1;
-      imm_src_d = 2'b00;
+      imm_src_d = EXTEND_I;
       alu_src_d = 1'b1;
       mem_write_d = 1'b0;
       result_src_d = 2'b01;
-      branch_d = 0'b0;
+      branch_d = 1'b0;
       alu_op = 2'b00;
       jump_d = 1'b0;
     end
     S_TYPE : begin
       reg_write_d = 1'b0;
-      imm_src_d = 2'b01;
+      imm_src_d = EXTEND_S;
       alu_src_d = 1'b1;
       mem_write_d = 1'b1;
       result_src_d = 2'bxx;
@@ -121,7 +121,7 @@ always_comb begin : MAIN_DECODER
     end
     R_TYPE : begin
       reg_write_d = 1'b1;
-      imm_src_d = 2'bxx;
+      imm_src_d = NO_EXTEND;
       alu_src_d = 1'b0;
       mem_write_d = 1'b0;
       result_src_d = 2'b00;
@@ -131,7 +131,7 @@ always_comb begin : MAIN_DECODER
     end
     B_TYPE : begin
       reg_write_d = 1'b0;
-      imm_src_d = 2'b10;
+      imm_src_d = EXTEND_B;
       alu_src_d = 1'b0;
       mem_write_d = 1'b0;
       result_src_d = 2'bxx;
@@ -141,7 +141,7 @@ always_comb begin : MAIN_DECODER
     end
     I_TYPE : begin
       reg_write_d = 1'b1;
-      imm_src_d = 2'b00;
+      imm_src_d = EXTEND_I;
       alu_src_d = 1'b1;
       mem_write_d = 1'b0;
       result_src_d = 2'b00;
@@ -151,7 +151,7 @@ always_comb begin : MAIN_DECODER
     end
     J_TYPE : begin
       reg_write_d = 1'b1;
-      imm_src_d = 2'b11;
+      imm_src_d = EXTEND_J;
       alu_src_d = 1'bx;
       mem_write_d = 1'b0;
       result_src_d = 2'b10;
@@ -161,7 +161,7 @@ always_comb begin : MAIN_DECODER
     end
     default : begin
       reg_write_d = 1'bx;
-      imm_src_d = 2'bx;
+      imm_src_d = NO_EXTEND;
       alu_src_d = 1'bx;
       mem_write_d = 1'bx;
       result_src_d = 2'bx;
@@ -261,6 +261,7 @@ always_comb begin : SIGN_EXTENDER
     EXTEND_S : imm_ext_d = {{20{imm[31]}}, imm[31:25], imm[11:7]};
     EXTEND_B : imm_ext_d = {{20{imm[31]}}, imm[7], imm[30:25], imm[11:8], 1'b0};
     EXTEND_J : imm_ext_d = {{12{imm[31]}}, imm[19:12], imm[20], imm[30:21], 1'b0};
+    NO_EXTEND : imm_ext_d = {32{1'bx}};
     default : imm_ext_d = {32{1'bx}};
   endcase
 end
@@ -269,7 +270,7 @@ logic [31:0] imm;
 logic [6:0] funct7;
 logic [2:0] funct3;
 logic [4:0] rd_d;
-enum logic [6:0] {LW, S_TYPE, R_TYPE, B_TYPE, I_TYPE, J_TYPE} op;
+enum logic [3:0] {NO_OP, LW, S_TYPE, R_TYPE, B_TYPE, I_TYPE, J_TYPE} op;
 always_comb begin : REGISTER_DECODER
   // Added last 7 bits for convience in SIGN_EXTENDER
   imm = instruction[31:0];
@@ -285,7 +286,7 @@ always_comb begin : REGISTER_DECODER
     7'b1100011 : op = B_TYPE;
     7'b0010011 : op = I_TYPE;
     7'b1101111 : op = J_TYPE;
-    default : op = {7{1'bx}};
+    default : op = NO_OP;
   endcase
 end
 
