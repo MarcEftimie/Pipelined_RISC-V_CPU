@@ -6,7 +6,8 @@
 
 module rv32i_multicycle_core(
   clk, rst, ena,
-  mem_addr, mem_rd_data, mem_wr_data, mem_wr_ena,
+  instr_mem_addr, instr_mem_rd_data, instr_mem_wr_data, instr_mem_wr_ena,
+  data_mem_addr, data_mem_rd_data, data_mem_wr_data, data_mem_wr_ena,
   PC
 );
 
@@ -16,9 +17,19 @@ parameter PC_START_ADDRESS=0;
 input  wire clk, rst, ena; // <- worry about implementing the ena signal last.
 
 // Memory interface.
-output logic [31:0] mem_addr, mem_wr_data;
-input   wire [31:0] mem_rd_data;
-output logic mem_wr_ena;
+output logic [31:0] instr_mem_addr;
+input   wire [31:0] instr_mem_rd_data;
+// Technically not needed
+output logic [31:0] instr_mem_wr_data;
+output logic instr_mem_wr_ena;
+always_comb begin
+  instr_mem_wr_ena = 1'b0;
+  instr_mem_wr_data = {32{1'b0}};
+end
+
+output logic [31:0] data_mem_addr, data_mem_wr_data;
+input wire [31:0] data_mem_rd_data;
+output logic data_mem_wr_ena;
 
 // Program Counter
 output wire [31:0] PC;
@@ -222,18 +233,22 @@ always_comb begin : PC_INPUT_MUX
   PC_next = pc_src_e ? pc_target_e : pc_plus_4f;
 end
 
+always_comb begin : INSTRUCTION_MEMORY
+  instr_mem_addr = PC;
+end
+
 logic [31:0] instruction;
 register #(.N(32)) mem_rd_data_reg_f(
-  .clk(clk), .ena(1'b1), .rst(rst), .d(mem_rd_data), .q(instruction)
+  .clk(clk), .ena(1'b1), .rst(rst), .d(instr_mem_rd_data), .q(instruction)
 );
 
 logic [31:0] pc_d;
-register #(.N(32)) pc_f_reg_f(
+register #(.N(32)) pc_f_reg(
   .clk(clk), .ena(1'b1), .rst(rst), .d(PC), .q(pc_d)
 );
 
 logic [31:0] pc_plus_4_d;
-register #(.N(32)) pc_plus_4_reg_f(
+register #(.N(32)) pc_plus_4_reg(
   .clk(clk), .ena(1'b1), .rst(rst), .d(pc_plus_4f), .q(pc_plus_4_d)
 );
 
@@ -411,6 +426,11 @@ register #(.N(32)) pc_plus_4_reg_m(
 );
 
 // Memory Stage  ****************************************************
+always_comb begin : DATA_MEMORY
+  data_mem_addr = alu_result_m;
+  data_mem_wr_data = write_data_m;
+  data_mem_wr_ena = mem_write_m;
+end
 logic reg_write_w;
 register #(.N(1)) reg_write_reg_w(
   .clk(clk), .ena(1'b1), .rst(rst), .d(reg_write_m), .q(reg_write_w)

@@ -53,12 +53,26 @@ MMCME2_BASE_inst (
 wire core_mem_wr_ena;
 wire [31:0] core_mem_addr, core_mem_wr_data, core_mem_rd_data;
 
+// rv32i_multicycle_core CORE (
+//   .clk(clk), .rst(rst), .ena(1'b1),
+//   .mem_addr(core_mem_addr), .mem_rd_data(core_mem_rd_data),
+//   .mem_wr_ena(core_mem_wr_ena), .mem_wr_data(core_mem_wr_data),
+//   .PC()
+// );
+
+wire data_mem_wr_ena;
+logic [31:0] data_mem_addr, data_mem_rd_data, data_mem_wr_data;
 rv32i_multicycle_core CORE (
   .clk(clk), .rst(rst), .ena(1'b1),
-  .mem_addr(core_mem_addr), .mem_rd_data(core_mem_rd_data),
-  .mem_wr_ena(core_mem_wr_ena), .mem_wr_data(core_mem_wr_data),
+  .instr_mem_addr(core_mem_addr), .instr_mem_rd_data(core_mem_rd_data),
+  .instr_mem_wr_ena(core_mem_wr_ena), .instr_mem_wr_data(core_mem_wr_data),
+  .data_mem_addr(data_mem_addr), .data_mem_rd_data(data_mem_rd_data),
+  .data_mem_wr_ena(data_mem_wr_ena), .data_mem_wr_data(data_mem_wr_data),
   .PC()
 );
+
+distributed_ram DATA_MEMORY(.clk(clk), .wr_ena(data_mem_wr_ena), .addr(data_mem_addr),
+                  .wr_data(data_mem_wr_data), .rd_data(data_mem_rd_data));
 
 // Memory Management Unit
 `ifndef INITIAL_INST_MEM
@@ -68,6 +82,8 @@ initial begin
   $finish;
 end
 `endif // INITIAL_INST_MEM
+
+
 
 mmu #(.INIT_INST(`INITIAL_INST_MEM))  MMU(
   .clk(clk), .rst(rst), .core_addr(core_mem_addr),
