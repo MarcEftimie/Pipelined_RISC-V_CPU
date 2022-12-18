@@ -9,21 +9,22 @@ Our goal for this project is to implement a pipelined CPU.
 A pipelined CPU is based on the single-cycle processor and dividing it into 5 stages, allowing 5 instructions to be run at the same, each at a different stage. This theoretically makes the cpu 5 times faster. The following are the 5 stages:
 
 <ol>
-<li>Fetch - processor reads the instruction from instruction memory<li>
+<li>Fetch - processor reads the instruction from instruction memory</li>
 <li>Decode - processor reads the source operands from the register file and decodes the instruction to produce the control signals
-<li>
+</li>
 
 <li>Execute - processor performs a computation with the ALU
-<li>
+</li>
 
 <li>Memory - the processor reads or writes data memory, if applicable
-<li>
+</li>
 
 <li>Writeback - the processor writes the result to the register file, if applicable
-<li>
+</li>
 </ol>
 
 Here is an image representing the cycle times of a pipelined cpu.
+
 <img src="cycletimes.png" />
 
 ## Hazards
