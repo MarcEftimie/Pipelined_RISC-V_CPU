@@ -3,16 +3,6 @@
 # Heavily based on this [reference card](http://csci206sp2020.courses.bucknell.edu/files/2020/01/riscv-card.pdf)
 # and the official [spec](https://github.com/riscv/riscv-isa-manual/releases/download/Ratified-IMAFDQC/riscv-spec-20191213.pdf)
 
-"""
-Psuedo-instructions to eventually support:
-    - j label -> jal x0, label
-    - jr ra jalr zero, ra, 0
-    - mv x1, x2 -> addi x1, x2, 0
-    - not x1, x2 -> xori x1, x2, -1
-    - 
-
-    -
-"""
 
 import argparse
 import os
@@ -50,7 +40,6 @@ class AssemblyProgram:
         parsed["line_number"] = self.line_number
         parsed["instruction"] = match.group(1)
         parsed["args"] = [x.strip() for x in match.group(2).split(",")]
-
         # Handle psuedo-instructions.
         if parsed["instruction"] == "nop":
             parsed["instruction"] = "addi"
@@ -69,6 +58,7 @@ class AssemblyProgram:
             parsed["instruction"] = "xori"
             parsed["args"].append("-1")
         if parsed["instruction"] == "li":
+
             raise NotImplemented("li is not supported")
         if parsed["instruction"] == "bgt":
             parsed["instruction"] = "blt"
@@ -81,15 +71,17 @@ class AssemblyProgram:
             parsed["instruction"] = "bge"
             parsed["args"].insert(1, "x0")
         if parsed["instruction"] == "call":
-            raise NotImplemented("call is not supported")
+            print("Warning: call only works with nearby functions!")
+            parsed["instruction"] = "jal"
+            parsed["args"].insert(0, "ra")
         if parsed["instruction"] == "ret":
-            parsed["insruction"] = "jalr"
+            parsed["instruction"] = "jalr"
             parsed["args"] = ["x0", "ra", "0"]
         self.address += 4
         self.parsed_lines.append(parsed)
         return 0
 
-    def write_mem(self, fn, hex_notbin=True):
+    def write_mem(self, fn, hex_notbin=True, disable_annotations=False):
         output = []
         address = 0
         for line in self.parsed_lines:
@@ -113,14 +105,19 @@ class AssemblyProgram:
                 print(f"  original line: {line['original']}")
                 raise e
             address += 4
-            output.append(bits)
+            output.append((bits, line))
         # Only write the file if the above completes without errors
         with open(fn, "w") as f:
-            for bits in output:
+            address = 0
+            for bits, line in output:
+                annotation = f" // PC={hex(address)} line={line['line_number']}: {line['original']}"
+                if disable_annotations:
+                    annotation = ""
                 if hex_notbin:
-                    f.write(bits.hex + "\n")
+                    f.write(f"{bits.hex}{annotation}\n")
                 else:
                     f.write(bits.bin + "\n")
+                address += 4
         return 0
 
 
@@ -134,6 +131,13 @@ def main():
         "--output",
         help="output file name of hex values in text that can be read from SystemVerilog's readmemh",
     )
+    parser.add_argument(
+        "--disable_annotations",
+        action="store_true",
+        default=False,
+        help="Prints memh files without any annotations.",
+    )
+
     parser.add_argument(
         "-v",
         "--verbose",
@@ -154,7 +158,11 @@ def main():
         )
     if args.output:
         sys.exit(
-            ap.write_mem(args.output, hex_notbin=not "memb" in args.output)
+            ap.write_mem(
+                args.output,
+                hex_notbin=not "memb" in args.output,
+                disable_annotations=args.disable_annotations,
+            )
         )
     sys.exit(0)
 

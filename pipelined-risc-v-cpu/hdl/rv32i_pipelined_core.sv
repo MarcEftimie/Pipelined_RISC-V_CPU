@@ -4,7 +4,7 @@
 `include "alu_types.sv"
 `include "rv32i_defines.sv"
 
-module rv32i_multicycle_core(
+module rv32i_pipelined_core(
   clk, rst, ena,
   instr_mem_addr, instr_mem_rd_data, instr_mem_wr_data, instr_mem_wr_ena,
   data_mem_addr, data_mem_rd_data, data_mem_wr_data, data_mem_wr_ena,

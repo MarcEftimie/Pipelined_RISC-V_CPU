@@ -62,7 +62,7 @@ wire [31:0] core_mem_addr, core_mem_wr_data, core_mem_rd_data;
 
 wire data_mem_wr_ena;
 logic [31:0] data_mem_addr, data_mem_rd_data, data_mem_wr_data;
-rv32i_multicycle_core CORE (
+rv32i_pipelined_core CORE (
   .clk(clk), .rst(rst), .ena(1'b1),
   .instr_mem_addr(core_mem_addr), .instr_mem_rd_data(core_mem_rd_data),
   .instr_mem_wr_ena(core_mem_wr_ena), .instr_mem_wr_data(core_mem_wr_data),
