@@ -9,12 +9,15 @@ Our goal for this project is to implement a pipelined CPU in SystemVerilog.
 You can write assembly instructions in any of the .s files in the asm directory. To run a simulation, use the make file to execute the appropriate commands.
 
 Example:
+
 itypes.s contains I type instructions.
 
-Runs simulation
+Run simulation:
+
 make test_rv32i_itypes
 
-Visualize output in gtkwave
+Visualize output in gtkwave:
+
 make waves_rv23i_system
 
 ## What is a pipelined CPU?
