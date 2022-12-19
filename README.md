@@ -82,7 +82,7 @@ FlushE = lwStall | PCSrcE
 
 <b>New Hardware for Forwarding</b>
 <ul>
-<li>4Depends on hazard unit
+<li>Depends on hazard unit
 </li>
 <li>Two forwarding multiplexers
 </li>
